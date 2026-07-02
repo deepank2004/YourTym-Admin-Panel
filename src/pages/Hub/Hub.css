@@ -1,0 +1,122 @@
+.hub-page {
+  width: 100%;
+  padding: 32px 34px;
+  background: #f5f6fb;
+  min-height: calc(100vh - 90px);
+}
+
+.hub-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 26px;
+}
+
+.hub-tabs {
+  display: flex;
+  align-items: center;
+  gap: 58px;
+  margin-bottom: 42px;
+}
+
+.hub-tab {
+  text-decoration: none;
+  font-size: 22px;
+  font-weight: 700;
+  color: #8c8c8c;
+  padding-bottom: 8px;
+}
+
+.hub-tab-active {
+  color: #ff5534;
+  border-bottom: 3px solid #ff5534;
+}
+
+.hub-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.hub-form-group {
+  margin-bottom: 22px;
+}
+
+.hub-form-group label {
+  display: block;
+  font-size: 21px;
+  font-weight: 700;
+  color: #252525;
+  margin-bottom: 10px;
+}
+
+.hub-form-group input,
+.hub-form-group select {
+  width: 100%;
+  height: 64px;
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0 22px;
+  font-size: 21px;
+  color: #111827;
+  outline: none;
+}
+
+.hub-form-group input::placeholder {
+  color: #777777;
+}
+
+.hub-form-group input:focus,
+.hub-form-group select:focus {
+  border-color: #ff5534;
+}
+
+.hub-form-group input[type="file"] {
+  height: 64px;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+
+.hub-submit-btn {
+  width: 180px;
+  height: 48px;
+  border: none;
+  border-radius: 5px;
+  background: #ff5534;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.hub-submit-btn:hover {
+  background: #e94829;
+}
+
+.hub-submit-btn:disabled {
+  background: #999999;
+  cursor: not-allowed;
+}
+
+.hub-form-group textarea {
+  width: 100%;
+  min-height: 140px;
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 18px 22px;
+  font-size: 20px;
+  color: #111827;
+  outline: none;
+  resize: vertical;
+}
+
+.hub-form-group textarea::placeholder {
+  color: #777777;
+}
+
+.hub-form-group textarea:focus {
+  border-color: #ff5534;
+}
