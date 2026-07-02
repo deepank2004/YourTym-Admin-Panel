@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import HOC from "../../components/HOC/HOC";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { putApi } from "../../Repository/Api";
+import { getApi, putApi } from "../../Repository/Api";
 import endPoints from "../../Repository/apiConfig";
 import "./Hub.css";
 
@@ -12,7 +12,12 @@ const UpdateHub = () => {
   const hubIdFromUrl = searchParams.get("id");
 
   const [loading, setLoading] = useState(false);
+  const [dropdownLoading, setDropdownLoading] = useState(false);
+
   const [hubId, setHubId] = useState(hubIdFromUrl || "");
+
+  const [cities, setCities] = useState([]);
+  const [mainCategories, setMainCategories] = useState([]);
 
   const [formData, setFormData] = useState({
     cityId: "",
@@ -22,12 +27,44 @@ const UpdateHub = () => {
     kml: null,
   });
 
+  useEffect(() => {
+    fetchDropdownData();
+  }, []);
+
+  const fetchDropdownData = async () => {
+    try {
+      setDropdownLoading(true);
+
+      const cityRes = await getApi(endPoints.getAllcity);
+      const categoryRes = await getApi(endPoints.getallMaincategory);
+
+      const cityData =
+        cityRes?.data ||
+        cityRes?.cities ||
+        cityRes?.city ||
+        [];
+
+      const categoryData =
+        categoryRes?.data ||
+        categoryRes?.categories ||
+        categoryRes?.category ||
+        [];
+
+      setCities(Array.isArray(cityData) ? cityData : []);
+      setMainCategories(Array.isArray(categoryData) ? categoryData : []);
+    } catch (error) {
+      console.log("Dropdown fetch error:", error);
+    } finally {
+      setDropdownLoading(false);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "active" ? value === "true" : value,
     }));
   };
 
@@ -43,6 +80,16 @@ const UpdateHub = () => {
 
     if (!hubId) {
       alert("Please enter Hub ID");
+      return;
+    }
+
+    if (!formData.cityId) {
+      alert("Please select City ID");
+      return;
+    }
+
+    if (!formData.mainCategoryId) {
+      alert("Please select Main Category ID");
       return;
     }
 
@@ -65,13 +112,17 @@ const UpdateHub = () => {
       data.append("kml", formData.kml);
     }
 
-    await putApi(endPoints.updateHub(hubId), data, {
-      setLoading,
-      successMsg: "Hub updated successfully!",
-      errorMsg: "Failed to update hub!",
-    });
+    try {
+      await putApi(endPoints.updateHub(hubId), data, {
+        setLoading,
+        successMsg: "Hub updated successfully!",
+        errorMsg: "Failed to update hub!",
+      });
 
-    navigate("/hub/get-hubs");
+      navigate("/hub/get-hubs");
+    } catch (error) {
+      console.log("Update Hub Error:", error);
+    }
   };
 
   return (
@@ -95,6 +146,7 @@ const UpdateHub = () => {
       <form className="hub-form" onSubmit={handleSubmit}>
         <div className="hub-form-group">
           <label>Hub ID</label>
+
           <input
             type="text"
             placeholder="Enter Hub ID"
@@ -106,38 +158,64 @@ const UpdateHub = () => {
 
         <div className="hub-form-group">
           <label>City ID</label>
-          <input
-            type="text"
+
+          <select
             name="cityId"
-            placeholder="Enter City ID"
             value={formData.cityId}
             onChange={handleChange}
             required
-          />
+            disabled={dropdownLoading}
+          >
+            <option value="">
+              {dropdownLoading ? "Loading cities..." : "Select City"}
+            </option>
+
+            {cities.map((city) => (
+              <option key={city._id} value={city._id}>
+                {city.cityName || city.name || "Unnamed City"} - {city._id}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="hub-form-group">
           <label>Main Category ID</label>
-          <input
-            type="text"
+
+          <select
             name="mainCategoryId"
-            placeholder="Enter Main Category ID"
             value={formData.mainCategoryId}
             onChange={handleChange}
             required
-          />
+            disabled={dropdownLoading}
+          >
+            <option value="">
+              {dropdownLoading ? "Loading categories..." : "Select Main Category"}
+            </option>
+
+            {mainCategories.map((category) => (
+              <option key={category._id} value={category._id}>
+                {category.name || "Unnamed Category"} - {category._id}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="hub-form-group">
           <label>Status</label>
-          <select name="active" value={formData.active} onChange={handleChange}>
-            <option value={true}>Active</option>
-            <option value={false}>Inactive</option>
+
+          <select
+            name="active"
+            value={String(formData.active)}
+            onChange={handleChange}
+          >
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
           </select>
         </div>
 
         <div className="hub-form-group">
           <label>Partner IDs</label>
+
           <textarea
             name="partnerIds"
             placeholder="Paste partner object IDs here, one per line or comma separated"
@@ -149,10 +227,15 @@ const UpdateHub = () => {
 
         <div className="hub-form-group">
           <label>Upload New KML File</label>
+
           <input type="file" accept=".kml" onChange={handleFileChange} />
         </div>
 
-        <button type="submit" className="hub-submit-btn" disabled={loading}>
+        <button
+          type="submit"
+          className="hub-submit-btn"
+          disabled={loading || dropdownLoading}
+        >
           {loading ? "Updating..." : "Update Hub"}
         </button>
       </form>

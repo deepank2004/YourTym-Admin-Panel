@@ -1,30 +1,38 @@
 .hub-page {
   width: 100%;
-  padding: 32px 34px;
-  background: #f5f6fb;
   min-height: calc(100vh - 90px);
+  background: #f5f6fb;
+  padding: 32px 34px;
+  box-sizing: border-box;
 }
 
 .hub-title {
-  font-size: 28px;
+  font-size: 34px;
   font-weight: 700;
   color: #111827;
-  margin-bottom: 26px;
+  margin-bottom: 28px;
 }
 
 .hub-tabs {
   display: flex;
   align-items: center;
-  gap: 58px;
-  margin-bottom: 42px;
+  gap: 55px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 12px;
 }
 
 .hub-tab {
   text-decoration: none;
-  font-size: 22px;
-  font-weight: 700;
-  color: #8c8c8c;
-  padding-bottom: 8px;
+  font-size: 21px;
+  font-weight: 600;
+  color: #8b8b8b;
+  padding-bottom: 10px;
+  transition: 0.3s;
+}
+
+.hub-tab:hover {
+  color: #ff5534;
 }
 
 .hub-tab-active {
@@ -39,84 +47,166 @@
 }
 
 .hub-form-group {
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 }
 
 .hub-form-group label {
   display: block;
-  font-size: 21px;
+  font-size: 20px;
   font-weight: 700;
   color: #252525;
   margin-bottom: 10px;
 }
 
+/* Input + Select + Textarea */
+
 .hub-form-group input,
-.hub-form-group select {
+.hub-form-group select,
+.hub-form-group textarea {
   width: 100%;
-  height: 64px;
-  border: 1px solid #d6d6d6;
+  border: 1px solid #d7d7d7;
   border-radius: 8px;
   background: #ffffff;
-  padding: 0 22px;
-  font-size: 21px;
+  padding: 0 20px;
+  font-size: 20px;
   color: #111827;
   outline: none;
+  box-sizing: border-box;
+  transition: all 0.25s ease;
 }
 
-.hub-form-group input::placeholder {
-  color: #777777;
+/* Text Input */
+
+.hub-form-group input[type="text"],
+.hub-form-group input[type="number"] {
+  height: 64px;
 }
 
-.hub-form-group input:focus,
-.hub-form-group select:focus {
-  border-color: #ff5534;
+/* Select */
+
+.hub-form-group select {
+  height: 64px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  background-size: 18px;
+  padding-right: 50px;
 }
+
+/* Dropdown Options */
+
+.hub-form-group select option {
+  font-size: 18px;
+}
+
+/* Textarea */
+
+.hub-form-group textarea {
+  min-height: 170px;
+  resize: vertical;
+  padding: 18px 20px;
+  line-height: 1.6;
+}
+
+/* File Upload */
 
 .hub-form-group input[type="file"] {
-  height: 64px;
-  padding: 14px 16px;
+  height: auto;
+  padding: 15px;
   cursor: pointer;
+  font-size: 18px;
+  background: #fff;
 }
 
+.hub-form-group input::placeholder,
+.hub-form-group textarea::placeholder {
+  color: #8b8b8b;
+}
+
+/* Focus */
+
+.hub-form-group input:focus,
+.hub-form-group textarea:focus,
+.hub-form-group select:focus {
+  border-color: #ff5534;
+  box-shadow: 0 0 0 3px rgba(255, 85, 52, 0.15);
+}
+
+/* Submit Button */
+
 .hub-submit-btn {
-  width: 180px;
-  height: 48px;
+  width: 190px;
+  height: 52px;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   background: #ff5534;
-  color: #ffffff;
+  color: #fff;
   font-size: 20px;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 8px;
+  transition: 0.25s ease;
+  margin-top: 10px;
 }
 
-.hub-submit-btn:hover {
-  background: #e94829;
+.hub-submit-btn:hover:not(:disabled) {
+  background: #ea4728;
 }
 
 .hub-submit-btn:disabled {
-  background: #999999;
+  background: #a8a8a8;
   cursor: not-allowed;
 }
 
-.hub-form-group textarea {
-  width: 100%;
-  min-height: 140px;
-  border: 1px solid #d6d6d6;
-  border-radius: 8px;
-  background: #ffffff;
-  padding: 18px 22px;
-  font-size: 20px;
-  color: #111827;
-  outline: none;
-  resize: vertical;
+/* Validation Error */
+
+.hub-error {
+  color: #dc2626;
+  font-size: 15px;
+  margin-top: 6px;
 }
 
-.hub-form-group textarea::placeholder {
-  color: #777777;
-}
+/* Responsive */
 
-.hub-form-group textarea:focus {
-  border-color: #ff5534;
+@media (max-width: 768px) {
+  .hub-page {
+    padding: 20px;
+  }
+
+  .hub-title {
+    font-size: 28px;
+  }
+
+  .hub-tabs {
+    gap: 22px;
+    flex-wrap: wrap;
+  }
+
+  .hub-tab {
+    font-size: 18px;
+  }
+
+  .hub-form-group label {
+    font-size: 18px;
+  }
+
+  .hub-form-group input,
+  .hub-form-group select {
+    height: 56px;
+    font-size: 17px;
+  }
+
+  .hub-form-group textarea {
+    font-size: 17px;
+  }
+
+  .hub-submit-btn {
+    width: 100%;
+    height: 52px;
+    font-size: 18px;
+  }
 }
