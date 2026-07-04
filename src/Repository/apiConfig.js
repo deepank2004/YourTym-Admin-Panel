@@ -108,6 +108,9 @@ const endPoints = {
   addHub: "api/v1/admin/hubs",
   updateHub: (id) => `api/v1/admin/hubs/${id}`,
   deleteHub: (id) => `api/v1/admin/hubs/${id}`,
+  getHubAreas: (hubId) => `api/v1/admin/hubs/${hubId}/areas`,
+  addBulkPartnersToHub: (hubId, hubAreaId) =>
+    `api/v1/admin/hubs/${hubId}/areas/${hubAreaId}/partners/bulk`,
   addarea: "api/v1/admin/area/areas",
   addCharge: "api/v1/admin/Charges/addCharges",
   addTraningvideo: "api/v1/partner-trainings",
