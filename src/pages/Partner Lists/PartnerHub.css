@@ -1,0 +1,42 @@
+.partnerhub-details-card {
+  background: #fff;
+  width: 520px;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+}
+
+.partnerhub-details-card h4 {
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.partnerhub-info {
+  margin-bottom: 18px;
+}
+
+.partnerhub-info label {
+  color: #8a8a8a;
+  font-size: 14px;
+}
+
+.partnerhub-info p {
+  margin-top: 5px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.remove-partner-hub-btn {
+  background: #ff4d37;
+  color: #fff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.remove-partner-hub-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
