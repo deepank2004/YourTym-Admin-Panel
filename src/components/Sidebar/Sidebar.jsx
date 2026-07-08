@@ -169,26 +169,31 @@ const Sidebar = () => {
     { name: "Location", icon: <MdLocationOn />, link: "/location/cities" },
 
     {
-      name: "Hubs",
-      icon: <FaBuilding />,
-      subItems: [
-        {
-          name: "Get Hubs",
-          icon: <IoIosArrowForward />,
-          link: "/hub/get-hubs",
-        },
-        {
-          name: "Create Hub",
-          icon: <IoIosArrowForward />,
-          link: "/hub/create-hub",
-        },
-        {
-          name: "Update Hub",
-          icon: <IoIosArrowForward />,
-          link: "/hub/update-hub",
-        },
-      ],
+  name: "Hubs",
+  icon: <FaBuilding />,
+  subItems: [
+    {
+      name: "Get Hubs",
+      icon: <IoIosArrowForward />,
+      link: "/hub/get-hubs",
     },
+    {
+      name: "Create Hub",
+      icon: <IoIosArrowForward />,
+      link: "/hub/create-hub",
+    },
+    {
+      name: "Update Hub",
+      icon: <IoIosArrowForward />,
+      link: "/hub/update-hub",
+    },
+    {
+      name: "Hub Analytics",
+      icon: <IoIosArrowForward />,
+      link: "/hub/hub-analytics",
+    },
+  ],
+},
 
     { name: "Charges", icon: <GiReceiveMoney />, link: "/charges" },
     { name: "Training Videos", icon: <CiVideoOn />, link: "/training-videos" },

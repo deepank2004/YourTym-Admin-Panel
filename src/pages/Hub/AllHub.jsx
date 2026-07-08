@@ -37,8 +37,8 @@ const AllHub = () => {
   const hubs = Array.isArray(hubData?.data)
     ? hubData.data
     : Array.isArray(hubData)
-    ? hubData
-    : [];
+      ? hubData
+      : [];
 
   const getHubName = (hub) => {
     if (hub?.name) return hub.name;
@@ -169,6 +169,12 @@ const AllHub = () => {
           <Link to="/hub/update-hub" className="link">
             <div className="servicetnasction">
               <h6>Update Hub</h6>
+            </div>
+          </Link>
+
+          <Link to="/hub/hub-analytics" className="link">
+            <div className="servicetnasction">
+              <h6>Hub Analytics</h6>
             </div>
           </Link>
         </div>

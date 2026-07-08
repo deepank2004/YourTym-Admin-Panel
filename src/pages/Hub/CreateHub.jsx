@@ -126,7 +126,13 @@ const CreateHub = () => {
         <Link to="/hub/update-hub" className="hub-tab">
           Update Hub
         </Link>
+
+        <Link to="/hub/hub-analytics" className="hub-tab">
+          Hub Analytics
+        </Link>
       </div>
+
+
 
       <form className="hub-form" onSubmit={handleSubmit}>
         <div className="hub-form-group">

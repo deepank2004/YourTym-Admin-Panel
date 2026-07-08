@@ -123,6 +123,7 @@ import EditAboutUs from "../pages/Policy Setting/EditAboutUs.jsx";
 import AllHub from "../pages/Hub/AllHub.jsx";
 import CreateHub from "../pages/Hub/CreateHub.jsx";
 import UpdateHub from "../pages/Hub/UpdateHub.jsx";
+import HubAnalytics from "../pages/Hub/HubAnalytics.jsx";
 
 
 
@@ -692,6 +693,11 @@ const allRoutes = [
   {
     route: "/hub/update-hub",
     component: <UpdateHub />,
+    isProtected: true,
+  },
+  {
+    route: "/hub/hub-analytics",
+    component: <HubAnalytics />,
     isProtected: true,
   },
   {
