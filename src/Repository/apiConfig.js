@@ -109,9 +109,27 @@ const endPoints = {
   updateHub: (id) => `api/v1/admin/hubs/${id}`,
   deleteHub: (id) => `api/v1/admin/hubs/${id}`,
   getHubAreas: (hubId) => `api/v1/admin/hubs/${hubId}/areas`,
-  getHubAnalytics: ({ cityId, mainCategoryId, hubAreaId, active }) =>
-    `api/v1/admin/hubs/analytics?cityId=${cityId || ""}&mainCategoryId=${mainCategoryId || ""
-    }&hubAreaId=${hubAreaId || ""}&active=${active}`,
+  getHubAnalytics: ({
+    cityId,
+    mainCategoryId,
+    hubAreaId,
+    active,
+    date,
+    from,
+    to,
+  }) => {
+    const params = new URLSearchParams();
+
+    if (cityId) params.append("cityId", cityId);
+    if (mainCategoryId) params.append("mainCategoryId", mainCategoryId);
+    if (hubAreaId) params.append("hubAreaId", hubAreaId);
+    params.append("active", active);
+    if (date) params.append("date", date);
+    if (from) params.append("from", from);
+    if (to) params.append("to", to);
+
+    return `api/v1/admin/hubs/analytics?${params.toString()}`;
+  },
   // Partner Hub
   getPartnerHub: (partnerId) => `api/v1/admin/partner/${partnerId}/hub`,
   removePartnerFromHub: (hubId, hubAreaId, partnerId) => `api/v1/admin/hubs/${hubId}/areas/${hubAreaId}/partners/${partnerId}`,

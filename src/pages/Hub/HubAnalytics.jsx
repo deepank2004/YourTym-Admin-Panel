@@ -18,6 +18,9 @@ const HubAnalytics = () => {
     mainCategoryId: "",
     hubAreaId: "",
     active: true,
+    date: "",
+    from: "",
+    to: "",
   });
 
   useEffect(() => {
@@ -31,10 +34,14 @@ const HubAnalytics = () => {
       const cityRes = await getApi(endPoints.getAllcity);
       const categoryRes = await getApi(endPoints.getallMaincategory);
 
-      setCities(Array.isArray(cityRes?.data) ? cityRes.data : []);
-      setMainCategories(Array.isArray(categoryRes?.data) ? categoryRes.data : []);
+      const cityData = cityRes?.data || cityRes?.cities || cityRes?.city || [];
+      const categoryData =
+        categoryRes?.data || categoryRes?.categories || categoryRes?.category || [];
+
+      setCities(Array.isArray(cityData) ? cityData : []);
+      setMainCategories(Array.isArray(categoryData) ? categoryData : []);
     } catch (error) {
-      console.log("Dropdown error:", error);
+      console.log("Dropdown fetch error:", error);
     } finally {
       setDropdownLoading(false);
     }
@@ -50,6 +57,26 @@ const HubAnalytics = () => {
   };
 
   const fetchAnalytics = async () => {
+    if (!filters.cityId) {
+      alert("Please select City");
+      return;
+    }
+
+    if (!filters.mainCategoryId) {
+      alert("Please select Main Category");
+      return;
+    }
+
+    if (filters.from && !filters.to) {
+      alert("Please select End Date");
+      return;
+    }
+
+    if (!filters.from && filters.to) {
+      alert("Please select Start Date");
+      return;
+    }
+
     try {
       await getApi(endPoints.getHubAnalytics(filters), {
         setResponse: setAnalytics,
@@ -70,9 +97,18 @@ const HubAnalytics = () => {
       <h2 className="hub-title">Hub Analytics</h2>
 
       <div className="hub-tabs">
-        <Link to="/hub/get-hubs" className="hub-tab">Get Hubs</Link>
-        <Link to="/hub/create-hub" className="hub-tab">Create Hub</Link>
-        <Link to="/hub/update-hub" className="hub-tab">Update Hub</Link>
+        <Link to="/hub/get-hubs" className="hub-tab">
+          Get Hubs
+        </Link>
+
+        <Link to="/hub/create-hub" className="hub-tab">
+          Create Hub
+        </Link>
+
+        <Link to="/hub/update-hub" className="hub-tab">
+          Update Hub
+        </Link>
+
         <Link to="/hub/hub-analytics" className="hub-tab hub-tab-active">
           Hub Analytics
         </Link>
@@ -81,8 +117,16 @@ const HubAnalytics = () => {
       <div className="hub-form">
         <div className="hub-form-group">
           <label>City</label>
-          <select name="cityId" value={filters.cityId} onChange={handleChange}>
-            <option value="">Select City</option>
+          <select
+            name="cityId"
+            value={filters.cityId}
+            onChange={handleChange}
+            disabled={dropdownLoading}
+          >
+            <option value="">
+              {dropdownLoading ? "Loading cities..." : "Select City"}
+            </option>
+
             {cities.map((city) => (
               <option key={city._id} value={city._id}>
                 {city.cityName || city.name || "Unnamed City"} - {city._id}
@@ -97,8 +141,12 @@ const HubAnalytics = () => {
             name="mainCategoryId"
             value={filters.mainCategoryId}
             onChange={handleChange}
+            disabled={dropdownLoading}
           >
-            <option value="">Select Main Category</option>
+            <option value="">
+              {dropdownLoading ? "Loading categories..." : "Select Main Category"}
+            </option>
+
             {mainCategories.map((category) => (
               <option key={category._id} value={category._id}>
                 {category.name || "Unnamed Category"} - {category._id}
@@ -119,8 +167,42 @@ const HubAnalytics = () => {
         </div>
 
         <div className="hub-form-group">
+          <label>Date</label>
+          <input
+            type="date"
+            name="date"
+            value={filters.date}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="hub-form-group">
+          <label>Start Date</label>
+          <input
+            type="date"
+            name="from"
+            value={filters.from}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="hub-form-group">
+          <label>End Date</label>
+          <input
+            type="date"
+            name="to"
+            value={filters.to}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="hub-form-group">
           <label>Status</label>
-          <select name="active" value={String(filters.active)} onChange={handleChange}>
+          <select
+            name="active"
+            value={String(filters.active)}
+            onChange={handleChange}
+          >
             <option value="true">Active</option>
             <option value="false">Inactive</option>
           </select>

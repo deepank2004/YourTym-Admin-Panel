@@ -194,7 +194,6 @@ const Sidebar = () => {
     },
   ],
 },
-
     { name: "Charges", icon: <GiReceiveMoney />, link: "/charges" },
     { name: "Training Videos", icon: <CiVideoOn />, link: "/training-videos" },
     { name: "Testimonials", icon: <MdRateReview />, link: "/testimonial" },
