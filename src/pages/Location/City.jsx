@@ -108,6 +108,11 @@ const City = () => {
                             <h6>Areas</h6>
                         </div>
                     </Link>
+                    <Link to={'/location/city-main-categories'} className='link'>
+                        <div className='servicetnasction'>
+                            <h6>City Main Categories</h6>
+                        </div>
+                    </Link>
 
                 </div>
                 <div className='userlist6'>

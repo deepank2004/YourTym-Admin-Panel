@@ -103,6 +103,7 @@ import AdminProfile from "../pages/Admin Profile/AdminProfile.jsx";
 import SubadminLogin from "../pages/Login/SubadminLogin.jsx";
 import City from "../pages/Location/City.jsx";
 import Area from "../pages/Location/Area.jsx";
+import CityMainCategory from "../pages/Location/CityMainCategory.jsx";
 import Charges from "../pages/Charges/Charges.jsx";
 import TrainingVideos from "../pages/Training Videos/TrainingVideos.jsx";
 import Testimonial from "../pages/Testimonial/Testimonial.jsx";
@@ -678,6 +679,11 @@ const allRoutes = [
   {
     route: "/location/areas",
     component: <Area />,
+    isProtected: true,
+  },
+  {
+    route: "/location/city-main-categories",
+    component: <CityMainCategory />,
     isProtected: true,
   },
   {
