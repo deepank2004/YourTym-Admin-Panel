@@ -27,6 +27,7 @@ const getName = (value, fallback = 'N/A') =>
 const CityMainCategoryModal = ({ show, onHide, data, onSaved }) => {
     const [cityId, setCityId] = useState('');
     const [mainCategoryId, setMainCategoryId] = useState('');
+    const [mainCategoryIds, setMainCategoryIds] = useState([]);
     const [active, setActive] = useState(true);
     const [cities, setCities] = useState([]);
     const [mainCategories, setMainCategories] = useState([]);
@@ -37,7 +38,9 @@ const CityMainCategoryModal = ({ show, onHide, data, onSaved }) => {
         if (!show) return;
 
         setCityId(getId(data?.cityId || data?.city) || '');
-        setMainCategoryId(getId(data?.mainCategoryId || data?.mainCategory) || '');
+        const selectedMainCategoryId = getId(data?.mainCategoryId || data?.mainCategory) || '';
+        setMainCategoryId(selectedMainCategoryId);
+        setMainCategoryIds(selectedMainCategoryId ? [selectedMainCategoryId] : []);
         setActive(data?.active ?? true);
 
         Promise.all([
@@ -50,21 +53,21 @@ const CityMainCategoryModal = ({ show, onHide, data, onSaved }) => {
     }, [show, data]);
 
     const handleSubmit = async () => {
-        if (!cityId || !mainCategoryId) {
-            toast.error('Please select a city and main category!');
+        if (!cityId || (isEdit ? !mainCategoryId : mainCategoryIds.length === 0)) {
+            toast.error(`Please select a city and ${isEdit ? 'main category' : 'at least one main category'}!`);
             return;
         }
 
-        const payload = { cityId, mainCategoryId, active };
-
         try {
             if (isEdit) {
+                const payload = { cityId, mainCategoryId, active };
                 await putApi(endPoints.updateCityMainCategory(data._id), payload, {
                     setLoading,
                     successMsg: 'City main category updated successfully!',
                     errorMsg: 'Failed to update city main category!',
                 });
             } else {
+                const payload = { cityId, mainCategoryIds, active };
                 await postApi(endPoints.addCityMainCategory, payload, {
                     setLoading,
                     successMsg: 'City main category added successfully!',
@@ -95,13 +98,29 @@ const CityMainCategoryModal = ({ show, onHide, data, onSaved }) => {
                             </select>
                         </div>
                         <div className="addcategory-container">
-                            <label>Select Main Category</label>
-                            <select value={mainCategoryId} onChange={(event) => setMainCategoryId(event.target.value)}>
-                                <option value="">Select Main Category</option>
-                                {mainCategories.map((category) => (
-                                    <option key={category._id} value={category._id}>{category.name}</option>
-                                ))}
-                            </select>
+                            <label>{isEdit ? 'Select Main Category' : 'Select Main Categories'}</label>
+                            {isEdit ? (
+                                <select value={mainCategoryId} onChange={(event) => setMainCategoryId(event.target.value)}>
+                                    <option value="">Select Main Category</option>
+                                    {mainCategories.map((category) => (
+                                        <option key={category._id} value={category._id}>{category.name}</option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <select
+                                    multiple
+                                    value={mainCategoryIds}
+                                    onChange={(event) => setMainCategoryIds(
+                                        Array.from(event.target.selectedOptions, (option) => option.value)
+                                    )}
+                                    style={{ minHeight: '130px' }}
+                                >
+                                    {mainCategories.map((category) => (
+                                        <option key={category._id} value={category._id}>{category.name}</option>
+                                    ))}
+                                </select>
+                            )}
+                            {!isEdit && <small>Hold Ctrl (Windows) or Command (Mac) to select multiple categories.</small>}
                         </div>
                         <div className="addcategory-container">
                             <label>Status</label>
