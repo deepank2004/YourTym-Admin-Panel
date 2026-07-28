@@ -31,6 +31,7 @@ const CityMainCategoryModal = ({ show, onHide, data, onSaved }) => {
     const [active, setActive] = useState(true);
     const [cities, setCities] = useState([]);
     const [mainCategories, setMainCategories] = useState([]);
+    const [categorySelectorOpen, setCategorySelectorOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const isEdit = Boolean(data?._id);
 
@@ -41,6 +42,7 @@ const CityMainCategoryModal = ({ show, onHide, data, onSaved }) => {
         const selectedMainCategoryId = getId(data?.mainCategoryId || data?.mainCategory) || '';
         setMainCategoryId(selectedMainCategoryId);
         setMainCategoryIds(selectedMainCategoryId ? [selectedMainCategoryId] : []);
+        setCategorySelectorOpen(false);
         setActive(data?.active ?? true);
 
         Promise.all([
@@ -107,20 +109,42 @@ const CityMainCategoryModal = ({ show, onHide, data, onSaved }) => {
                                     ))}
                                 </select>
                             ) : (
-                                <select
-                                    multiple
-                                    value={mainCategoryIds}
-                                    onChange={(event) => setMainCategoryIds(
-                                        Array.from(event.target.selectedOptions, (option) => option.value)
+                                <div className="main-category-checkbox-select">
+                                    <button
+                                        type="button"
+                                        className="main-category-checkbox-trigger"
+                                        onClick={() => setCategorySelectorOpen((open) => !open)}
+                                        aria-expanded={categorySelectorOpen}
+                                    >
+                                        <span>
+                                            {mainCategoryIds.length === 0
+                                                ? 'Select Main Categories'
+                                                : `${mainCategoryIds.length} categor${mainCategoryIds.length === 1 ? 'y' : 'ies'} selected`}
+                                        </span>
+                                        <span>{categorySelectorOpen ? '▲' : '▼'}</span>
+                                    </button>
+                                    {categorySelectorOpen && (
+                                        <div className="main-category-checkbox-menu">
+                                            {mainCategories.length === 0 ? (
+                                                <p>No main categories available.</p>
+                                            ) : mainCategories.map((category) => (
+                                                <label key={category._id} className="main-category-checkbox-option">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={mainCategoryIds.includes(category._id)}
+                                                        onChange={(event) => {
+                                                            setMainCategoryIds((selectedIds) => event.target.checked
+                                                                ? [...selectedIds, category._id]
+                                                                : selectedIds.filter((id) => id !== category._id));
+                                                        }}
+                                                    />
+                                                    <span>{category.name}</span>
+                                                </label>
+                                            ))}
+                                        </div>
                                     )}
-                                    style={{ minHeight: '130px' }}
-                                >
-                                    {mainCategories.map((category) => (
-                                        <option key={category._id} value={category._id}>{category.name}</option>
-                                    ))}
-                                </select>
+                                </div>
                             )}
-                            {!isEdit && <small>Hold Ctrl (Windows) or Command (Mac) to select multiple categories.</small>}
                         </div>
                         <div className="addcategory-container">
                             <label>Status</label>

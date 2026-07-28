@@ -2175,6 +2175,108 @@ input:checked+.slider:before {
     margin: 0;
 }
 
+.partner-wallet-summary {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.partner-wallet-amount {
+    width: min(100%, 455px);
+}
+
+.partner-wallet-actions {
+    display: flex;
+    gap: 0.75rem;
+    padding-bottom: 1px;
+}
+
+.partner-wallet-actions button {
+    min-height: 44px;
+    padding: 10px 22px;
+    border: 1px solid #FF5534;
+    border-radius: 4px;
+    background: #FF5534;
+    color: #FFFFFF;
+    font-weight: 500;
+}
+
+.partner-wallet-actions button:last-child {
+    background: #FFFFFF;
+    color: #FF5534;
+}
+
+.main-category-checkbox-select {
+    position: relative;
+    width: 100%;
+}
+
+.main-category-checkbox-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 12px;
+    border: 1px solid #CACACA;
+    border-radius: 4px;
+    background: #FFFFFF;
+    color: #353535;
+    text-align: left;
+}
+
+.main-category-checkbox-menu {
+    position: absolute;
+    z-index: 1056;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;
+    max-height: 220px;
+    padding: 6px 0;
+    overflow-y: auto;
+    border: 1px solid #CACACA;
+    border-radius: 4px;
+    background: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.main-category-checkbox-menu p {
+    margin: 0;
+    padding: 10px 12px;
+    color: #989692;
+}
+
+.main-category-checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 9px 12px;
+    cursor: pointer;
+}
+
+.main-category-checkbox-option:hover {
+    background: #FFF2EF;
+}
+
+.main-category-checkbox-option input {
+    width: 16px;
+    height: 16px;
+    accent-color: #FF5534;
+}
+
+@media (max-width: 768px) {
+    .partner-wallet-summary {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .partner-wallet-actions button {
+        flex: 1;
+    }
+}
+
 
 .addplan-container {
     margin-top: 2rem;

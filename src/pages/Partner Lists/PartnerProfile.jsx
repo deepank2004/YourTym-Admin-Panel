@@ -164,6 +164,25 @@ const PartnerProfile = ({ active }) => {
                                 <input type="text" value={partnerData?.data?.data?.size} />
                             </div>
                         </div>
+                        <div className='partner-wallet-summary'>
+                            <div className='userprofile-content-inputes partner-wallet-amount'>
+                                <label htmlFor="partner-wallet">Wallet Amount</label>
+                                <input
+                                    id="partner-wallet"
+                                    type="text"
+                                    value={`₹${partnerData?.data?.data?.wallet ?? 0}`}
+                                    readOnly
+                                />
+                            </div>
+                            <div className='partner-wallet-actions'>
+                                <button onClick={() => navigate(`/insurance-plans?partnerId=${id}&action=add`)}>
+                                    Add Amount
+                                </button>
+                                <button onClick={() => navigate(`/insurance-plans?partnerId=${id}&action=deduct`)}>
+                                    Deduct Amount
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 )}
                 <Partnermultipleroutes active={active} data={partnerData} loading={loading} />

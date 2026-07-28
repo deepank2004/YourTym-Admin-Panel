@@ -1,122 +1,162 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import HOC from "../../components/HOC/HOC";
+import { getAuthHeaders } from "../../components/BaseURl/BaseUrl";
+
+const walletActions = {
+  add: {
+    title: "Add Credit Recharge",
+    button: "Add Credit",
+    endpoint: (partnerId) =>
+      `https://yourtym.in/api/v1/admin/wallet/addWallet/user/${partnerId}`,
+  },
+  deduct: {
+    title: "Deduct Credit Recharge",
+    button: "Deduct Credit",
+    endpoint: (partnerId) =>
+      `https://yourtym.in/api/v1/admin/wallet/deductWallet/user/${partnerId}`,
+  },
+};
 
 const AddCreditRecharge = () => {
-  const [partnerId, setPartnerId] = useState("");
-  const [amount, setAmount] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const selectedPartnerId = searchParams.get("partnerId") || "";
+  const selectedAction = searchParams.get("action") === "deduct" ? "deduct" : "add";
+  const [partnerId, setPartnerId] = useState(selectedPartnerId);
+  const [amounts, setAmounts] = useState({ add: "", deduct: "" });
+  const [loadingAction, setLoadingAction] = useState("");
+  const [messages, setMessages] = useState({ add: "", deduct: "" });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event, action) => {
+    event.preventDefault();
+    const numericAmount = Number(amounts[action]);
 
-    if (!partnerId || !amount) {
-      setMessage("⚠ Please fill in all fields.");
+    if (!partnerId || !amounts[action]) {
+      setMessages((previous) => ({ ...previous, [action]: "Please fill in all fields." }));
       return;
     }
 
-    setLoading(true);
-    setMessage("");
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+      setMessages((previous) => ({
+        ...previous,
+        [action]: "Please enter an amount greater than zero.",
+      }));
+      return;
+    }
+
+    setLoadingAction(action);
+    setMessages((previous) => ({ ...previous, [action]: "" }));
 
     try {
-      const res = await axios.post(
-        `https://yourtym.com/api/api/v1/admin/wallet/addWallet/user/${partnerId}`,
-        { balance: Number(amount) },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjFjYzM5MzI5ODViMmM3MTllMTQxNyIsImlhdCI6MTc1NDg3OTEzOSwiZXhwIjoxNzg2NDE1MTM5fQ.WswPutFZGiIX5V1EzU-flmb4eYjcRCnBg9JLgf92CL4",
-          },
-        }
+      const response = await axios.post(
+        walletActions[action].endpoint(partnerId),
+        { balance: numericAmount },
+        getAuthHeaders()
       );
 
-      if (res.status === 200) {
-        setMessage("✅ Credit added successfully!");
-      } else {
-        setMessage("❌ Something went wrong!");
-      }
+      toast.success(
+        response?.data?.message ||
+          `Amount ${action === "deduct" ? "deducted from" : "added to"} wallet successfully!`
+      );
+      setAmounts((previous) => ({ ...previous, [action]: "" }));
+      navigate(-1);
     } catch (error) {
-      setMessage(error.response?.data?.message || "❌ Error adding credit.");
+      setMessages((previous) => ({
+        ...previous,
+        [action]:
+          error?.response?.data?.message ||
+          `Failed to ${action === "deduct" ? "deduct from" : "add to"} wallet.`,
+      }));
     } finally {
-      setLoading(false);
+      setLoadingAction("");
     }
+  };
+
+  const renderCard = (action) => {
+    const config = walletActions[action];
+    const isSelected = selectedAction === action;
+
+    return (
+      <div
+        key={action}
+        style={{
+          background: "#fff",
+          padding: "20px",
+          borderRadius: "8px",
+          boxShadow: isSelected
+            ? "0 0 0 2px #FF5534, 0 2px 8px rgba(0,0,0,0.1)"
+            : "0 2px 8px rgba(0,0,0,0.1)",
+          width: "100%",
+          maxWidth: "500px",
+        }}
+      >
+        <h5 style={{ marginBottom: "20px" }}>{config.title}</h5>
+        <form onSubmit={(event) => handleSubmit(event, action)}>
+          <div className="mb-3">
+            <label className="form-label fw-bold">Partner ID</label>
+            <input
+              type="text"
+              placeholder="Enter Partner ID"
+              value={partnerId}
+              onChange={(event) => setPartnerId(event.target.value)}
+              className="form-control"
+              readOnly={Boolean(selectedPartnerId)}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label fw-bold">Amount</label>
+            <input
+              type="number"
+              min="0.01"
+              step="0.01"
+              placeholder="Enter Amount"
+              value={amounts[action]}
+              onChange={(event) =>
+                setAmounts((previous) => ({ ...previous, [action]: event.target.value }))
+              }
+              className="form-control"
+            />
+          </div>
+
+          <button
+            type="submit"
+            style={{ backgroundColor: "#FF5534", borderColor: "#FF5534" }}
+            className="btn w-100 text-white"
+            disabled={Boolean(loadingAction)}
+          >
+            {loadingAction === action ? "Processing..." : config.button}
+          </button>
+        </form>
+
+        {messages[action] && (
+          <div
+            className="mt-3 p-2 text-center"
+            style={{ background: "#f8d7da", color: "#721c24", borderRadius: "4px" }}
+          >
+            {messages[action]}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
     <div className="userlistcontainer">
-      {/* Top Bar Title */}
       <div className="userlist1">
         <div className="userlist2">
-          <h6>Add Credit Recharge</h6>
+          <h6>Credit Recharge</h6>
         </div>
       </div>
 
-      {/* Form Section */}
       <div className="userlist6">
-        <div
-          style={{
-            background: "#fff",
-            padding: "20px",
-            borderRadius: "8px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            maxWidth: "500px",
-          }}
-        >
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label className="form-label fw-bold">Partner ID</label>
-              <input
-                type="text"
-                placeholder="Enter Partner ID"
-                value={partnerId}
-                onChange={(e) => setPartnerId(e.target.value)}
-                className="form-control"
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label fw-bold">Amount</label>
-              <input
-                type="number"
-                placeholder="Enter Amount"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="form-control"
-              />
-            </div>
-
-            <button
-              type="submit"
-              style={{ backgroundColor: "#FF5534", borderColor: "#FF5534" }}
-              className="btn w-100 text-white"
-              disabled={loading}
-            >
-              {loading ? "Processing..." : "Add Credit"}
-            </button>
-          </form>
-
-          {message && (
-            <div
-              className="mt-3 p-2 text-center"
-              style={{
-                background: message.includes("✅")
-                  ? "#d4edda"
-                  : message.includes("⚠")
-                  ? "#fff3cd"
-                  : "#f8d7da",
-                color: message.includes("✅")
-                  ? "#155724"
-                  : message.includes("⚠")
-                  ? "#856404"
-                  : "#721c24",
-                borderRadius: "4px",
-              }}
-            >
-              {message}
-            </div>
-          )}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "24px" }}>
+          {renderCard("add")}
+          {renderCard("deduct")}
         </div>
       </div>
     </div>
