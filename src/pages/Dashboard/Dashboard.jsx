@@ -9,6 +9,7 @@ import endPoints from "../../Repository/apiConfig";
 
 import img from "../../assest/loading1.gif";
 import { useAdmin } from "../Admin Profile/AdminContext";
+import { getCompletedOrders, sumCompletedOrderRevenue } from "./revenueUtils";
 
 const Dashboard = () => {
   const [Data, setData] = useState({});
@@ -19,11 +20,25 @@ const Dashboard = () => {
   const permissions = adminProfile?.data?.permission || [];
 
   const fetchData = useCallback(async () => {
-    await getApi(endPoints.getallCount, {
-      setResponse: setData,
-      setLoading: setLoading,
-      errorMsg: "Failed to fetch data!",
-    });
+    setLoading(true);
+    try {
+      const [countResponse, completedOrders] = await Promise.all([
+        getApi(endPoints.getallCount, { errorMsg: "Failed to fetch data!" }),
+        getCompletedOrders(),
+      ]);
+
+      setData({
+        ...countResponse,
+        data: {
+          ...countResponse?.data,
+          totalRevenue: sumCompletedOrderRevenue(completedOrders),
+        },
+      });
+    } catch (_) {
+      // The shared API helper displays the request error.
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const [bookingData, setBookingData] = useState([]);

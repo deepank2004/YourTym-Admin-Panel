@@ -3,6 +3,7 @@ import Chart from 'react-apexcharts';
 import { getApi } from '../../Repository/Api';
 import endPoints from '../../Repository/apiConfig';
 import img from '../../assest/loading1.gif';
+import { getCompletedOrders, getOrderRevenue } from './revenueUtils';
 
 const MiddleDashboard = () => {
     const [series, setSeries] = useState([{ name: 'Sales', data: Array(12).fill(0) }]);
@@ -15,16 +16,28 @@ const MiddleDashboard = () => {
 
     const fetchData = useCallback(async () => {
         setSeries([{ name: 'Sales', data: Array(12).fill(0) }]);
-        await getApi(endPoints.getAdminEarningsByMonth(selectedYear), {
-            setResponse: (response) => {
-                if (response?.data) {
-                    const earnings = response.data.map((item) => item.earnings || 0);
-                    setSeries([{ name: 'Sales', data: earnings }]);
+        setLoading(true);
+        try {
+            const year = Number(selectedYear);
+            const completedOrders = await getCompletedOrders({
+                startDate: `${year}-01-01`,
+                endDate: `${year}-12-31`,
+            });
+            const monthlyRevenue = Array(12).fill(0);
+
+            completedOrders.forEach((order) => {
+                const orderDate = new Date(order?.Date || order?.createdAt || order?.updatedAt);
+                if (!Number.isNaN(orderDate.getTime()) && orderDate.getFullYear() === year) {
+                    monthlyRevenue[orderDate.getMonth()] += getOrderRevenue(order);
                 }
-            },
-            setLoading,
-            errorMsg: 'Failed to fetch earnings data!',
-        });
+            });
+
+            setSeries([{ name: 'Sales', data: monthlyRevenue }]);
+        } catch (_) {
+            // The shared API helper displays the request error.
+        } finally {
+            setLoading(false);
+        }
     }, [selectedYear]);
 
     const fetchPopularServices = useCallback(async () => {
