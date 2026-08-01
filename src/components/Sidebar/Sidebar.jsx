@@ -200,12 +200,6 @@ const Sidebar = () => {
     { name: "All Leaves", icon: <BiCalendarX />, link: "/leaves" },
 
     {
-      name: "Credit Recharge",
-      icon: <IoDocumentTextOutline />,
-      link: "/insurance-plans",
-    },
-
-    {
       name: "Consent Forms",
       icon: <IoDocumentTextOutline />,
       link: "/consent-forms",

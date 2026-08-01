@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import HOC from "../../components/HOC/HOC";
-import { getAuthHeaders } from "../../components/BaseURl/BaseUrl";
+import { BaseUrl, getAuthHeaders } from "../../components/BaseURl/BaseUrl";
 
 const walletActions = {
   add: {
@@ -17,7 +17,7 @@ const walletActions = {
     title: "Deduct Credit Recharge",
     button: "Deduct Credit",
     endpoint: (partnerId) =>
-      `https://yourtym.in/api/v1/admin/wallet/deductWallet/user/${partnerId}`,
+      `${BaseUrl}api/v1/admin/wallet/removeWallet/user/${partnerId}`,
   },
 };
 
