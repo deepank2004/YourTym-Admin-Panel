@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import HOC from "../../components/HOC/HOC";
 import { Link } from "react-router-dom";
 
@@ -20,6 +20,8 @@ const PartnerLists = () => {
   const [search, setSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("");
+  const [selectedMainCategory, setSelectedMainCategory] = useState("");
+  const [mainCategoryData, setMainCategoryData] = useState([]);
   const setLoading1 = false;
   const [pagination, setPagination] = useState({
     limit: 10,
@@ -31,22 +33,137 @@ const PartnerLists = () => {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  const mainCategoryOptions = useMemo(
+    () => [
+      { label: "All Main Categories", value: "" },
+      ...(Array.isArray(mainCategoryData?.data)
+        ? mainCategoryData.data.map((category) => ({
+            label: category?.name || "Unnamed Category",
+            value: category?._id,
+          }))
+        : []),
+    ],
+    [mainCategoryData]
+  );
+
+  const partnerHasMainCategory = useCallback(
+    (partner) => {
+      if (!selectedMainCategory) return true;
+
+      const selectedCategory = mainCategoryOptions.find(
+        (category) => category.value === selectedMainCategory
+      );
+      const assignedCategories =
+        partner?.user?.serviceCategoryId ||
+        partner?.serviceCategoryId ||
+        partner?.user?.mainCategoryId ||
+        partner?.mainCategoryId ||
+        [];
+      const categoryList = Array.isArray(assignedCategories)
+        ? assignedCategories
+        : [assignedCategories];
+
+      return categoryList.some((category) => {
+        const categoryId =
+          typeof category === "object"
+            ? category?._id || category?.mainCategoryId?._id || category?.mainCategoryId
+            : category;
+        const categoryName =
+          typeof category === "object"
+            ? category?.name || category?.mainCategoryId?.name
+            : "";
+
+        return (
+          categoryId === selectedMainCategory ||
+          (selectedCategory?.label && categoryName === selectedCategory.label)
+        );
+      });
+    },
+    [mainCategoryOptions, selectedMainCategory]
+  );
+
   const fetchData = useCallback(async () => {
     setPartnerData([]);
-    await getApi(
-      endPoints.getallPartner(
-        pagination.page,
-        pagination.limit,
-        searchQuery,
-        selectedFilter
-      ),
-      {
-        setResponse: setPartnerData,
-        setLoading: setLoading,
-        errorMsg: "Failed to fetch partner data!",
+    setLoading(true);
+
+    try {
+      if (!selectedMainCategory) {
+        const response = await getApi(
+          endPoints.getallPartner(
+            pagination.page,
+            pagination.limit,
+            searchQuery,
+            selectedFilter
+          ),
+          { errorMsg: "Failed to fetch partner data!" }
+        );
+        setPartnerData(response);
+        return;
       }
-    );
-  }, [pagination.page, pagination.limit, searchQuery, selectedFilter]);
+
+      const allPartners = [];
+      let page = 1;
+      let totalPages = 1;
+
+      do {
+        const response = await getApi(
+          endPoints.getallPartner(page, 100, searchQuery, selectedFilter),
+          { errorMsg: "Failed to fetch partner data!" }
+        );
+        allPartners.push(...(Array.isArray(response?.data) ? response.data : []));
+        totalPages = Math.max(1, Number(response?.pagination?.totalPages) || 1);
+        page += 1;
+      } while (page <= totalPages);
+
+      const filteredPartners = allPartners.filter(partnerHasMainCategory);
+      const startIndex = (pagination.page - 1) * pagination.limit;
+      const pagePartners = filteredPartners.slice(
+        startIndex,
+        startIndex + pagination.limit
+      );
+      const filteredTotalPages = Math.max(
+        1,
+        Math.ceil(filteredPartners.length / pagination.limit)
+      );
+
+      setPartnerData({
+        data: pagePartners,
+        pagination: {
+          page: pagination.page,
+          totalPages: filteredTotalPages,
+          totalDocs: filteredPartners.length,
+          hasPrevPage: pagination.page > 1,
+          hasNextPage: pagination.page < filteredTotalPages,
+        },
+      });
+    } catch (_) {
+      // The shared API helper displays the request error.
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    pagination.page,
+    pagination.limit,
+    searchQuery,
+    selectedFilter,
+    selectedMainCategory,
+    partnerHasMainCategory,
+  ]);
+
+  useEffect(() => {
+    const fetchMainCategories = async () => {
+      try {
+        await getApi(endPoints.getallMaincategory, {
+          setResponse: setMainCategoryData,
+          errorMsg: "Failed to fetch main categories!",
+        });
+      } catch (_) {
+        // The shared API helper displays the request error.
+      }
+    };
+
+    fetchMainCategories();
+  }, []);
 
   useEffect(() => {
     setPagination((prevPagination) => ({
@@ -161,6 +278,19 @@ const PartnerLists = () => {
                 setPagination((prev) => ({ ...prev, page: 1 }));
               }}
               resetLabel="Reset Filter"
+            />
+            <FilterDropdown
+              filters={mainCategoryOptions}
+              selectedFilter={
+                mainCategoryOptions.find(
+                  (category) => category.value === selectedMainCategory
+                )?.label || "All Main Categories"
+              }
+              onFilterSelect={(category) => {
+                setSelectedMainCategory(category?.value || "");
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
+              resetLabel="All Main Categories"
             />
             {/* <div className='userlist5'>
                             <button>Export</button>
